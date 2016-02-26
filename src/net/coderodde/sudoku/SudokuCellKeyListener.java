@@ -20,14 +20,19 @@ class SudokuCellKeyListener implements KeyListener {
     
     @Override
     public void keyTyped(KeyEvent e) {
-        int keyCode = e.getExtendedKeyCode();
+        char c = e.getKeyChar();
         
-        switch (keyCode) {
-            case KeyEvent.VK_UP:
-            case KeyEvent.VK_RIGHT:
-            case KeyEvent.VK_DOWN:
-            case KeyEvent.VK_LEFT: 
-                grid.moveCursor((JTextField) e.getSource(), keyCode);
+        switch (c) {
+            case 'a':
+            case 'A':
+            case 's':
+            case 'S':
+            case 'd':
+            case 'D':
+            case 'w':
+            case 'W':
+                e.consume();
+                grid.moveCursor((JTextField) e.getSource(), c);
         }
     }
 

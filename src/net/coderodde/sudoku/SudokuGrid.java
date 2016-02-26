@@ -5,14 +5,14 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
@@ -25,7 +25,9 @@ import javax.swing.border.Border;
  */
 final class SudokuGrid extends JPanel {
     
-    private static final Font FONT = new Font("Verdana", Font.CENTER_BASELINE, 20);
+    private static final Font FONT = new Font("Verdana", 
+                                              Font.CENTER_BASELINE, 
+                                              20);
     
     private final JTextField[][] grid;
     private final Map<JTextField, Point> mapFieldToCoordinates = 
@@ -108,28 +110,123 @@ final class SudokuGrid extends JPanel {
         
         this.setLayout(new BorderLayout());
         this.add(gridPanel,   BorderLayout.NORTH);
-        this.add(buttonPanel, BorderLayout.SOUTH);   
+        this.add(buttonPanel, BorderLayout.SOUTH);  
+        
+        clearButton.addActionListener(new ActionListener(){
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clearAll();
+            }
+        });
+        
+        solveButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                solve();
+            }
+        });
     }
     
-    void moveCursor(JTextField field, int keyCode) {
+    private void addSpace(JTextField field) {
+        if (field.getText().isEmpty()) {
+            field.setText(" ");
+        }
+    }
+    
+    void moveCursor(JTextField field, char c) {
         Point coordinates = mapFieldToCoordinates.get(field);
+        field.setBackground(Color.WHITE);
         
-        switch (keyCode) {
-            case KeyEvent.VK_UP:
+        switch (c) {
+            case 'w':
+            case 'W':
+                
+                if (coordinates.y > 0) {
+                    grid[coordinates.y - 1][coordinates.x].requestFocus();
+                    addSpace(grid[coordinates.y - 1][coordinates.x]);
+                }
                 
                 break;
                 
-            case KeyEvent.VK_RIGHT:
+            case 'd':
+            case 'D':
+                
+                if (coordinates.x < dimension - 1) {
+                    grid[coordinates.y][coordinates.x + 1].requestFocus();
+                    addSpace(grid[coordinates.y][coordinates.x + 1]);
+                }
                 
                 break;
                 
-            case KeyEvent.VK_DOWN:
+            case 's':
+            case 'S':
+                
+                if (coordinates.y < dimension - 1) {
+                    grid[coordinates.y + 1][coordinates.x].requestFocus();
+                    addSpace(grid[coordinates.y + 1][coordinates.x]);
+                }
                 
                 break;
                 
-            case KeyEvent.VK_LEFT:
+            case 'a':
+            case 'A':
+                
+                if (coordinates.x > 0) {
+                    grid[coordinates.y][coordinates.x - 1].requestFocus();
+                    addSpace(grid[coordinates.y][coordinates.x - 1]);
+                }
                 
                 break;
+        }
+    }
+    
+    void clearAll() {
+        for (JTextField[] row : grid) {
+            for (JTextField field : row) {
+                field.setText("");
+            }
+        }
+    }
+    
+    void solve() {
+        Sudoku sudoku = new Sudoku(dimension);
+        
+        for (int y = 0; y < dimension; ++y) {
+            for (int x = 0; x < dimension; ++x) {
+                String text = grid[y][x].getText();
+                
+                int number = -1;
+                
+                try {
+                    number = Integer.parseInt(text.trim());
+                } catch (NumberFormatException ex) {
+                    
+                }
+                
+                sudoku.set(x, y, number);
+            }
+        }
+        
+        try {
+            Sudoku solution = new SudokuSolver(dimension).solve(sudoku);
+            String skip = dimension < 10 ? " " : "";
+            
+            for (int y = 0; y < dimension; ++y) {
+                for (int x = 0; x < dimension; ++x) {
+                    grid[y][x].setText(skip + solution.get(x, y));
+                }
+            }  
+            
+            if (!solution.isValid()) {
+                throw new RuntimeException("Something gone wrong.");
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, 
+                                          ex.getMessage(),
+                                          "Error",
+                                          JOptionPane.ERROR_MESSAGE);
         }
     }
 }
