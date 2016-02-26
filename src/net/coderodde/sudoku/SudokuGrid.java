@@ -8,8 +8,11 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -127,6 +130,46 @@ final class SudokuGrid extends JPanel {
                 solve();
             }
         });
+    }
+    
+    public void loadFromFile(File file) {
+        try {
+            Scanner scanner = new Scanner(file);
+            clearAll();
+            
+            int cells = dimension * dimension;
+            int y = 0;
+            int x = 0;
+            
+            while (cells > 0) {
+                if (scanner.hasNext()) {
+                    String text = scanner.next();
+                    
+                    try {
+                        int number = Integer.parseInt(text);
+                        
+                        if (number > 0 && number <= dimension) {
+                            grid[y][x].setText(" " + number);
+                        }
+                    } catch (NumberFormatException ex) {
+                        
+                    }
+                    
+                    ++x;
+                    
+                    if (x == dimension) {
+                        x = 0;
+                        ++y;
+                    }
+                } else {
+                    break;
+                }
+                
+                --cells;
+            }
+        } catch (FileNotFoundException ex) {
+            
+        }
     }
     
     private void addSpace(JTextField field) {

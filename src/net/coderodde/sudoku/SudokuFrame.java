@@ -3,13 +3,13 @@ package net.coderodde.sudoku;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.File;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JSeparator;
 
 /**
  *
@@ -18,9 +18,10 @@ import javax.swing.JSeparator;
 public class SudokuFrame {
     
     private final JFrame frame = new JFrame("Sudoku solver");
+    private SudokuGrid grid;
     
     public SudokuFrame() {
-        frame.getContentPane().add(new SudokuGrid(9));
+        frame.getContentPane().add(grid = new SudokuGrid(9));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         buildMenu();
         frame.pack();
@@ -33,12 +34,14 @@ public class SudokuFrame {
         JMenuBar bar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
         
+        JMenuItem load   = new JMenuItem("Load");
         JMenuItem grid4  = new JMenuItem("4 times 4");
         JMenuItem grid9  = new JMenuItem("9 times 9");
         JMenuItem grid16 = new JMenuItem("16 times 16");
         
         JMenuItem about = new JMenuItem("About");
         
+        fileMenu.add(load);
         fileMenu.add(grid4);
         fileMenu.add(grid9);
         fileMenu.add(grid16);
@@ -47,26 +50,35 @@ public class SudokuFrame {
         
         bar.add(fileMenu);
         
+        load.addActionListener((ActionEvent e) -> {
+            JFileChooser chooser = new JFileChooser();
+            int status = chooser.showOpenDialog(frame);
+            
+            if (status == JFileChooser.APPROVE_OPTION) {
+                File file = chooser.getSelectedFile();
+                grid.loadFromFile(file);
+            }
+        });
+        
         grid4.addActionListener((ActionEvent e) -> {
             frame.getContentPane().removeAll();
-            frame.getContentPane().add(new SudokuGrid(4));
+            frame.getContentPane().add(grid = new SudokuGrid(4));
             frame.pack();
             centerView();
         });
         
         grid9.addActionListener((ActionEvent e) -> {
             frame.getContentPane().removeAll();
-            frame.getContentPane().add(new SudokuGrid(9));
+            frame.getContentPane().add(grid = new SudokuGrid(9));
             frame.pack();
             centerView();
         });
         
         grid16.addActionListener((ActionEvent e) -> {
             frame.getContentPane().removeAll();
-            frame.getContentPane().add(new SudokuGrid(16));
+            frame.getContentPane().add(grid = new SudokuGrid(16));
             frame.pack();
             centerView();
-            System.out.println("fewaf");
         });
         
         about.addActionListener((ActionEvent e) -> {
