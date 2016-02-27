@@ -83,20 +83,24 @@ public class App {
     }
 
     public static void main(String[] args) {
-        new SudokuFrame();
-        
-//        int requestedDimension = getDimension(args);
-//        App app = new App(requestedDimension);
-//
-//        try {
-//            app.createSolver();
-//        } catch (IllegalArgumentException ex) {
-//            System.err.println("ERROR: " + ex.getMessage());
-//            System.exit(1);
-//        }
-//
-//        app.scanDigits();
-//        app.solve();
+        if (args.length > 0) {
+            int requestedDimension = getDimension(args);
+            App app = new App(requestedDimension);
+
+            try {
+                app.createSolver();
+            } catch (IllegalArgumentException ex) {
+                System.err.println("ERROR: " + ex.getMessage());
+                System.exit(1);
+            }
+
+            app.scanDigits();
+            app.solve();
+        } else {
+            javax.swing.SwingUtilities.invokeLater(() -> { 
+                new SudokuFrame(); 
+            });
+        }
     }
 
     private static int getDimension(String[] args) {
