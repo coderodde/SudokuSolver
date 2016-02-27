@@ -21,7 +21,8 @@ class SudokuCellKeyListener implements KeyListener {
     @Override
     public void keyTyped(KeyEvent e) {
         char c = e.getKeyChar();
-
+        JTextField textField = (JTextField) e.getSource();
+        
         switch (c) {
             case 'a':
             case 'A':
@@ -32,7 +33,14 @@ class SudokuCellKeyListener implements KeyListener {
             case 'w':
             case 'W':
                 e.consume();
-                grid.moveCursor((JTextField) e.getSource(), c);
+                grid.moveCursor(textField, c);
+        }
+        
+        String s = "" + grid.getDimension();
+        int digits = s.length();
+        
+        if (textField.getText().length() >= digits) {
+            e.consume();
         }
     }
 

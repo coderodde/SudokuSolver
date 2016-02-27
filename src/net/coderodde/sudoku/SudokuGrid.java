@@ -152,7 +152,11 @@ final class SudokuGrid extends JPanel {
         });
     }
 
-    public void openFile(File file) {
+    int getDimension() {
+        return dimension;
+    }
+    
+    void openFile(File file) {
         try {
             Scanner scanner = new Scanner(file);
             clearAll();
